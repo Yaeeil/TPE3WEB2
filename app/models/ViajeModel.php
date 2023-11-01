@@ -16,6 +16,20 @@ class ViajeModel extends Model
         $query->execute();
         return $query->fetchAll(PDO::FETCH_OBJ);
     }
+    //ver si seria asi
+    function Paginated ($page,$limit){ //page indica desde cual y limit cuantos resultados mostrar
+        $offset = (($page - 1) * $limit); //calculo para pag usa page y limit
+        $query = $this->db->prepare("SELECT viajes LIMIT "  .$offset ." , ".$limit);
+        $query->execute();
+        $games = $query->fetchAll(PDO::FETCH_OBJ);
+        return $games; 
+        }
+        
+        function filter($destino){
+        $query = $this->db->prepare("SELECT * FROM viajes WHERE Destino = ?");
+        $query->execute([$destino]);
+        $games = $query->fetchAll(PDO::FETCH_OBJ);
+        return $games;}
 
     function getViajeById($id)
     {

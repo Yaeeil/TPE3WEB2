@@ -70,7 +70,10 @@
                     $this->view->response("El viaje con el id " . $id . " no existe", 404);
                 }
             }
-        }
+        }  
+        // // if (isset($_GET['filter']) && !empty($_GET['filter'])) {   
+                     //       $games = $this->model->filter($filter);
+                    //}
        
         //agregar un get por una condicion especifica asc o desc
 
