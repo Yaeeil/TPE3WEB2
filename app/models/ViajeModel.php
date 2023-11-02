@@ -4,11 +4,12 @@ class ViajeModel extends Model
 {
 
 
-    public function getViajes($parametros) {
-        $sql="SELECT * FROM viajes";
-        if(isset($parametros['order'])){
+    public function getViajes($parametros)
+    {
+        $sql = "SELECT * FROM viajes";
+        if (isset($parametros['order'])) {
             $sql .= " ORDER BY " . $parametros['order'];
-            if(isset($parametros['sort'])){
+            if (isset($parametros['sort'])) {
                 $sql .= " " . $parametros['sort'];
             }
         }
@@ -17,19 +18,24 @@ class ViajeModel extends Model
         return $query->fetchAll(PDO::FETCH_OBJ);
     }
     //ver si seria asi
-    function Paginated ($page,$limit){ //page indica desde cual y limit cuantos resultados mostrar
-        $offset = (($page - 1) * $limit); //calculo para pag usa page y limit
-        $query = $this->db->prepare("SELECT viajes LIMIT "  .$offset ." , ".$limit);
+    //page: Este parámetro representa la página que deseas mostrar limit: Este parámetro representa la cantidad de registros que deseas mostrar en cada página
+    //http://localhost/TPE3/api/viajes?page=2&limit=8 (x ej muestra desde el 9 al 16)
+    function Paginated($page, $limit)
+    {
+        $offset = ($page - 1) * $limit;
+        $query = $this->db->prepare("SELECT * FROM viajes LIMIT $offset, $limit");
         $query->execute();
-        $games = $query->fetchAll(PDO::FETCH_OBJ);
-        return $games; 
-        }
-        
-        function filter($destino){
-        $query = $this->db->prepare("SELECT * FROM viajes WHERE Destino = ?");
+        $viajes = $query->fetchAll(PDO::FETCH_OBJ);
+        return $viajes;
+    }
+
+    function filter($destino)
+    {
+        $query = $this->db->prepare("SELECT * FROM viajes WHERE destino = ?");
         $query->execute([$destino]);
-        $games = $query->fetchAll(PDO::FETCH_OBJ);
-        return $games;}
+        $viajes = $query->fetchAll(PDO::FETCH_OBJ);
+        return $viajes;
+    }
 
     function getViajeById($id)
     {
@@ -39,6 +45,16 @@ class ViajeModel extends Model
         return $viajes;
     }
 
+    function getViajesOrdenDestino($parametros){
+    $sql = "SELECT * FROM viajes ORDER BY destino";
+    if (isset($parametros['sort'])) {
+        $sql .= " " . $parametros['sort'];
+    }
+    $query = $this->db->prepare($sql);
+    $query->execute();
+    return $query->fetchAll(PDO::FETCH_OBJ);
+}
+
     function addViaje($destino, $fechaS, $fechaR, $descripcion, $precio, $cliente)
     {
         $query = $this->db->prepare('INSERT INTO viajes (destino, fecha_salida, fecha_regreso, descripcion, precio, id_cliente) VALUES (?, ?, ?, ?, ?, ?)');
@@ -46,13 +62,13 @@ class ViajeModel extends Model
         return $this->db->lastInsertId();
     }
 
-   /* function getViajeByClienteId($id)
-    {
-        $query = $this->db->prepare("SELECT * FROM viajes WHERE id_cliente = ?");
-        $query->execute([$id]);
-        $viajes = $query->fetchAll(PDO::FETCH_OBJ);
-        return $viajes;
-    } */
+    /* function getViajeByClienteId($id)
+     {
+         $query = $this->db->prepare("SELECT * FROM viajes WHERE id_cliente = ?");
+         $query->execute([$id]);
+         $viajes = $query->fetchAll(PDO::FETCH_OBJ);
+         return $viajes;
+     } */
 
     function deleteViaje($id)
     {
