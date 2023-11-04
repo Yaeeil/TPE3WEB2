@@ -49,7 +49,18 @@ class clienteModel extends Model
     //     $clientes = $query->fetch(PDO::FETCH_OBJ);
     //     return $clientes;
     // }
-
+    
+    
+    //orden fijo (item obligatorio)
+    function getClientesOrdenApellido($parametros){
+        $sql = "SELECT * FROM clientes ORDER BY apellido";
+        if (isset($parametros['sort_dir'])) {
+            $sql .= " " . $parametros['sort_dir'];
+        }
+        $query = $this->db->prepare($sql);
+        $query->execute();
+        return $query->fetchAll(PDO::FETCH_OBJ);
+    }
 
 
     function addCliente($nombre, $apellido, $correoElectronico, $fechaDeNacimiento, $dni, $direccion)
@@ -58,9 +69,9 @@ class clienteModel extends Model
         $query->execute([$nombre, $apellido, $correoElectronico, $fechaDeNacimiento, $dni, $direccion]);
         return $this->db->lastInsertId();
     }
-    function updatecliente($nombre, $apellido, $correoElectronico, $fechaDeNacimiento, $dni, $direccion,$id)
+    function updateCliente($nombre, $apellido, $correoElectronico, $fechaDeNacimiento, $dni, $direccion,$id)
     {
-        $query = $this->db->prepare('UPDATE viajes SET nombre = ?, apellido = ?, correo_electronico = ?, fecha_nacimiento = ?, dni = ?, direccion = ? WHERE id_cliente = ?');
+        $query = $this->db->prepare('UPDATE clientes SET nombre = ?, apellido = ?, correo_electronico = ?, fecha_nacimiento = ?, dni = ?, direccion = ? WHERE id_cliente = ?');
         $query->execute([$nombre, $apellido, $correoElectronico, $fechaDeNacimiento, $dni, $direccion,$id]);
     }
     function deleteCliente($id)

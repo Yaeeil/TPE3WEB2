@@ -7,35 +7,26 @@ class ViajeModel extends Model
     public function getViajes($parametros)
     {
         $sql = "SELECT * FROM viajes";
-        if (isset($parametros['order'])) {
-            $sql .= " ORDER BY " . $parametros['order'];
-            if (isset($parametros['sort'])) {
-                $sql .= " " . $parametros['sort'];
+        if (isset($parametros['filter_key'])) {
+            $key = $parametros['filter_key'];
+            $value = $parametros['filter_value'];
+            $sql .= " WHERE " . $key . " = \"" . $value . "\"";
+        }
+        if (isset($parametros['sort_by'])) {
+            $sql .= " ORDER BY " . $parametros['sort_by'];
+            if (isset($parametros['sort_dir'])) {
+                $sql .= " " . $parametros['sort_dir'];
             }
+        }
+        if (isset($parametros['page'])) {
+            $offset = (($parametros['page'] - 1) * $parametros['tamPage']);
+            $sql .= " LIMIT " . $parametros['tamPage'] . ' OFFSET '. $offset;
         }
         $query = $this->db->prepare($sql);
         $query->execute();
         return $query->fetchAll(PDO::FETCH_OBJ);
     }
-    //ver si seria asi
-    //page: Este parámetro representa la página que deseas mostrar limit: Este parámetro representa la cantidad de registros que deseas mostrar en cada página
-    //http://localhost/TPE3/api/viajes?page=2&limit=8 (x ej muestra desde el 9 al 16)
-    function Paginated($page, $limit)
-    {
-        $offset = ($page - 1) * $limit;
-        $query = $this->db->prepare("SELECT * FROM viajes LIMIT $offset, $limit");
-        $query->execute();
-        $viajes = $query->fetchAll(PDO::FETCH_OBJ);
-        return $viajes;
-    }
 
-    function filter($destino)
-    {
-        $query = $this->db->prepare("SELECT * FROM viajes WHERE destino = ?");
-        $query->execute([$destino]);
-        $viajes = $query->fetchAll(PDO::FETCH_OBJ);
-        return $viajes;
-    }
 
     function getViajeById($id)
     {
@@ -45,15 +36,16 @@ class ViajeModel extends Model
         return $viajes;
     }
 
+    //orden fijo (item obligatorio)
     function getViajesOrdenDestino($parametros){
-    $sql = "SELECT * FROM viajes ORDER BY destino";
-    if (isset($parametros['sort'])) {
-        $sql .= " " . $parametros['sort'];
+        $sql = "SELECT * FROM viajes ORDER BY destino";
+        if (isset($parametros['sort_dir'])) {
+            $sql .= " " . $parametros['sort_dir'];
+        }
+        $query = $this->db->prepare($sql);
+        $query->execute();
+        return $query->fetchAll(PDO::FETCH_OBJ);
     }
-    $query = $this->db->prepare($sql);
-    $query->execute();
-    return $query->fetchAll(PDO::FETCH_OBJ);
-}
 
     function addViaje($destino, $fechaS, $fechaR, $descripcion, $precio, $cliente)
     {
