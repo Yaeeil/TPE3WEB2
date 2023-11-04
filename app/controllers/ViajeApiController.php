@@ -48,7 +48,7 @@ class ViajeApiController extends ApiController
                         return $this->view->response($viaje, 200);
                     }
                 } elseif (isset($_GET['page']) && isset($_GET['limit'])) {
-                    if ($_GET['page'] < 0 || $_GET['page'] == 0 || !is_numeric($_GET['page']) || !is_numeric($_GET['limit'])) {
+                    if ($_GET['page'] <= 0 || !is_numeric($_GET['page']) || !is_numeric($_GET['limit'])) {
                         return $this->view->response("Page no puede ser 0 ni String, revise la documentación", 400);
                     }
                     $parametros['page'] = $_GET['page'];
