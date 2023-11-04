@@ -29,12 +29,12 @@ class ViajeApiController extends ApiController
             $parametros = [];
 
             if (empty($params)) {
-                if (isset($_GET['order'])) {
-                    $parametros['order'] = $_GET['order'];
+                if (isset($_GET['sort_by'])) {
+                    $parametros['sort_by'] = $_GET['sort_by'];
                 }
-                if (isset($_GET['sort'])) {
-                    $parametros['sort'] = $_GET['sort'];
-                    if (!($parametros['sort'] == "asc" || $parametros['sort'] == "ASC" || $parametros['sort'] == "desc" || $parametros['sort'] == "DESC")) {
+                if (isset($_GET['sort_dir'])) {
+                    $parametros['sort_dir'] = $_GET['sort_dir'];
+                    if (!($parametros['sort_dir'] == "asc" || $parametros['sort_dir'] == "ASC" || $parametros['sort_dir'] == "desc" || $parametros['sort_dir'] == "DESC")) {
                         return $this->view->response("El parámetro pasado a sort tiene un error, revise la documentación", 400);
                     }
                 }
@@ -48,7 +48,7 @@ class ViajeApiController extends ApiController
                         return $this->view->response($viaje, 200);
                     }
                 } elseif (isset($_GET['page']) && isset($_GET['limit'])) {
-                    if ($_GET['page'] == 0 || !is_numeric($_GET['page']) || !is_numeric($_GET['limit'])) {
+                    if ($_GET['page'] < 0 || $_GET['page'] == 0 || !is_numeric($_GET['page']) || !is_numeric($_GET['limit'])) {
                         return $this->view->response("Page no puede ser 0 ni String, revise la documentación", 400);
                     }
                     $parametros['page'] = $_GET['page'];

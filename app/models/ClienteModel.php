@@ -2,15 +2,25 @@
 require_once './app/models/Model.php';
 class clienteModel extends Model
 {
-    
-    
-    public function getClientes($parametros) {
-        $sql="SELECT * FROM clientes";
-        if(isset($parametros['order'])){
-            $sql .= " ORDER BY " . $parametros['order'];
-            if(isset($parametros['sort'])){
-                $sql .= " " . $parametros['sort'];
+
+
+    public function getClientes($parametros)
+    {
+        $sql = "SELECT * FROM clientes";
+        if (isset($parametros['filter_key'])) {
+            $key = $parametros['filter_key'];
+            $value = $parametros['filter_value'];
+            $sql .= " WHERE " . $key . " = \"" . $value . "\"";
+        }
+        if (isset($parametros['sort_by'])) {
+            $sql .= " ORDER BY " . $parametros['sort_by'];
+            if (isset($parametros['sort_dir'])) {
+                $sql .= " " . $parametros['sort_dir'];
             }
+        }
+        if (isset($parametros['page'])) {
+            $offset = (($parametros['page'] - 1) * $parametros['tamPage']);
+            $sql .= " LIMIT " . $parametros['tamPage'] . ' OFFSET '. $offset;
         }
         $query = $this->db->prepare($sql);
         $query->execute();
@@ -24,6 +34,21 @@ class clienteModel extends Model
         $cliente = $query->fetch(PDO::FETCH_OBJ);
         return $cliente;
     }
+    function getViajesByCliente($id)
+    {
+        $query = $this->db->prepare("SELECT * FROM viajes WHERE id_cliente = ?");
+        $query->execute([$id]);
+        $clientes = $query->fetch(PDO::FETCH_OBJ);
+        return $clientes;
+    }
+
+    // function getClientesByDestino($destino)
+    // {
+    //     $query = $this->db->prepare("SELECT * FROM clientes JOIN viajes ON viajes.id_cliente = clientes.id_cliente WHERE viajes.destino = ?");
+    //     $query->execute([$destino]);
+    //     $clientes = $query->fetch(PDO::FETCH_OBJ);
+    //     return $clientes;
+    // }
 
 
 
@@ -33,13 +58,11 @@ class clienteModel extends Model
         $query->execute([$nombre, $apellido, $correoElectronico, $fechaDeNacimiento, $dni, $direccion]);
         return $this->db->lastInsertId();
     }
-    function updateCliente($id, $nombre, $apellido, $correoElectronico, $fechaDeNacimiento, $dni, $direccion)
+    function updatecliente($nombre, $apellido, $correoElectronico, $fechaDeNacimiento, $dni, $direccion,$id)
     {
-
-        $query = $this->db->prepare('UPDATE clientes SET nombre = ?, apellido = ?, correo_electronico = ?, fecha_nacimiento = ?, dni = ?, direccion = ? WHERE id_cliente = ?');
-        $query->execute([$nombre, $apellido, $correoElectronico, $fechaDeNacimiento, $dni, $direccion, $id]);
+        $query = $this->db->prepare('UPDATE viajes SET nombre = ?, apellido = ?, correo_electronico = ?, fecha_nacimiento = ?, dni = ?, direccion = ? WHERE id_cliente = ?');
+        $query->execute([$nombre, $apellido, $correoElectronico, $fechaDeNacimiento, $dni, $direccion,$id]);
     }
-
     function deleteCliente($id)
     {
         $query = $this->db->prepare('DELETE FROM clientes WHERE id_cliente = ?');

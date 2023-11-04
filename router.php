@@ -3,11 +3,19 @@ require_once 'database/config.php';
 require_once 'libs/router.php';
 require_once 'app/controllers/ViajeApiController.php';
 require_once 'app/controllers/ClienteApiController.php';
+require_once 'app/controllers/ApiController.php';
+
+class notFoundController extends ApiController
+{
+    public function notFound()
+    {
+        $this->view->response("La ruta no existe ", 404);
+    }
+}
 
 $router = new Router();
-
+$router->setDefaultRoute("notFoundController", "notFound");
 //revisar por las dudas, creo que es asi 
-
 #                 endpoint      verbo     controller           método
 //viajes
 $router->addRoute('viajes', 'GET', 'ViajeApiController', 'get');
@@ -25,7 +33,7 @@ $router->addRoute('clientes/:ID', 'GET', 'ClienteApiController', 'get');
 $router->addRoute('clientes/:ID', 'PUT', 'ClienteApiController', 'update');
 $router->addRoute('clientes/:ID', 'DELETE', 'ClienteApiController', 'delete');
 $router->addRoute('clientes/:ID/:subrecurso', 'GET', 'ClienteApiController', 'get');
-//este es el orden fijo
 $router->addRoute('clientes/orderNombre', 'GET', 'ClienteApiController', 'get');
+//  $router->addRoute('clientes/destino/:destino', 'GET',    'ClienteApiController', 'getClientesByDestino'   );
 
 $router->route($_GET['resource'], $_SERVER['REQUEST_METHOD']);
