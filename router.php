@@ -14,7 +14,7 @@ class notFoundController extends ApiController
 }
 
 $router = new Router();
-$router->setDefaultRoute("notFoundController", "notFound");
+$router->setDefaultRoute("notFoundController", "notFound");//ruta por defecto
 
 #                 endpoint      verbo     controller           método
 //viajes
@@ -24,8 +24,8 @@ $router->addRoute('viajes/:ID', 'GET', 'ViajeApiController', 'get');
 $router->addRoute('viajes/:ID', 'PUT', 'ViajeApiController', 'update');
 $router->addRoute('viajes/:ID', 'DELETE', 'ViajeApiController', 'delete');
 $router->addRoute('viajes/:ID/:subrecurso', 'GET', 'ViajeApiController', 'get');
-//este es el orden fijo
-$router->addRoute('viajesOrderDestino', 'GET', 'ViajeApiController', 'getOrdenDestino');
+
+
 
 //clientes
 $router->addRoute('clientes', 'GET', 'ClienteApiController', 'get');
@@ -34,6 +34,5 @@ $router->addRoute('clientes/:ID', 'GET', 'ClienteApiController', 'get');
 $router->addRoute('clientes/:ID', 'PUT', 'ClienteApiController', 'update');
 $router->addRoute('clientes/:ID', 'DELETE', 'ClienteApiController', 'delete');
 $router->addRoute('clientes/:ID/:subrecurso', 'GET', 'ClienteApiController', 'get');
-//fijo
-$router->addRoute('clientesOrderApellido', 'GET', 'ClienteApiController', 'getOrdenApellido');
+
 $router->route($_GET['resource'], $_SERVER['REQUEST_METHOD']);

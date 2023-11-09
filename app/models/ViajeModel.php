@@ -7,10 +7,12 @@ class ViajeModel extends Model
     public function getViajes($parametros)
     {
         $sql = "SELECT * FROM viajes";
+        $bindParams = [];
         if (isset($parametros['filter_key'])) {
             $key = $parametros['filter_key'];
             $value = $parametros['filter_value'];
-            $sql .= " WHERE " . $key . " = \"" . $value . "\"";
+            $sql .= " WHERE " . $key . " = ? ";
+            $bindParams[]=$value;
         }
         if (isset($parametros['sort_by'])) {
             $sql .= " ORDER BY " . $parametros['sort_by'];
@@ -19,11 +21,11 @@ class ViajeModel extends Model
             }
         }
         if (isset($parametros['page'])) {
-            $offset = (($parametros['page'] - 1) * $parametros['tamPage']);
-            $sql .= " LIMIT " . $parametros['tamPage'] . ' OFFSET '. $offset;
+            $offset = (($parametros['page'] - 1) * $parametros['size']);
+            $sql .= " LIMIT " . $parametros['size'] . ' OFFSET '. $offset;
         }
         $query = $this->db->prepare($sql);
-        $query->execute();
+        $query->execute($bindParams);
         return $query->fetchAll(PDO::FETCH_OBJ);
     }
 
@@ -36,16 +38,6 @@ class ViajeModel extends Model
         return $viajes;
     }
 
-    //orden fijo (item obligatorio)
-    function getViajesOrdenDestino($parametros){
-        $sql = "SELECT * FROM viajes ORDER BY destino";
-        if (isset($parametros['sort_dir'])) {
-            $sql .= " " . $parametros['sort_dir'];
-        }
-        $query = $this->db->prepare($sql);
-        $query->execute();
-        return $query->fetchAll(PDO::FETCH_OBJ);
-    }
 
     function addViaje($destino, $fechaS, $fechaR, $descripcion, $precio, $cliente)
     {
@@ -54,13 +46,7 @@ class ViajeModel extends Model
         return $this->db->lastInsertId();
     }
 
-    /* function getViajeByClienteId($id)
-     {
-         $query = $this->db->prepare("SELECT * FROM viajes WHERE id_cliente = ?");
-         $query->execute([$id]);
-         $viajes = $query->fetchAll(PDO::FETCH_OBJ);
-         return $viajes;
-     } */
+
 
     function deleteViaje($id)
     {

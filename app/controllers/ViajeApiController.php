@@ -33,24 +33,6 @@ class ViajeApiController extends ApiController
         $this->view->response($viaje, 200);
     }
 
-    //item obligatorio, sort_by fijo
-    public function getOrdenDestino() {
-        try {
-            $parametros = [];
-            if (isset($_GET['sort_dir'])) {
-                if (!$this->validarSort()) {
-                    $this->view->response("sort_dir incorrecto debe ser asc o desc, revise la documentacion", 400);
-                    return;
-                }
-                $parametros['sort_dir'] = $_GET['sort_dir'];
-                
-            }
-            $viajes = $this->model->getViajesOrdenDestino($parametros);
-            return $this->view->response($viajes, 200);
-        } catch (\Throwable $e) {
-            $this->view->response("Error no encontrado, revise la documentación", 500);
-        }
-        }
 
     private function validarSort()
     {
@@ -64,7 +46,7 @@ class ViajeApiController extends ApiController
      private function validarSortBy()
     {
         $sortBy = strtolower($_GET['sort_by']);
-        if (!in_array($sortBy, array('destino', 'fecha_salida', 'fecha_regreso', 'descripcion', 'precio', 'id_cliente'))) {
+        if (!in_array($sortBy, array('destino', 'fecha_salida', 'fecha_regreso', 'descripcion', 'precio', 'id_cliente', 'id_viaje'))) {
             return False;
         }
         return True;
@@ -73,7 +55,7 @@ class ViajeApiController extends ApiController
     private function validarFilterKey()
     {
         $filter_key = strtolower($_GET['filter_key']);
-        if (!in_array($filter_key, array('destino', 'fecha_salida', 'fecha_regreso', 'descripcion', 'precio', 'id_cliente'))) {
+        if (!in_array($filter_key, array('destino', 'fecha_salida', 'fecha_regreso', 'descripcion', 'precio', 'id_cliente', 'id_viaje'))) {
             return False;
         }
         return True;
@@ -84,43 +66,28 @@ class ViajeApiController extends ApiController
         }
         return true;
         }
-        private function validarTamPage(){
-            if (!is_numeric($_GET['tamPage'])) {
+        private function validarSize(){
+            if (!is_numeric($_GET['size'])) {
                       return false;       
             }
             return true;
             }
         
 
-    private function getCampoViaje($viaje, $subrecurso)
-    {
-        switch ($subrecurso) {
-            case 'id_viaje':
-                $this->view->response($viaje->id_viaje, 200);
-                break;
-            case 'destino':
-                $this->view->response($viaje->destino, 200);
-                break;
-            case 'fecha_salida':
-                $this->view->response($viaje->fecha_salida, 200);
-                break;
-            case 'fecha_regreso':
-                $this->view->response($viaje->fecha_regreso, 200);
-                break;
-            case 'descripcion':
-                $this->view->response($viaje->descripcion, 200);
-                break;
-            case 'precio':
-                $this->view->response($viaje->precio, 200);
-                break;
-            case 'id_cliente':
-                $this->view->response($viaje->id_cliente, 200);
-                break;
-            default:
-            $this->view->response("El cliente con el subrecurso: " . $subrecurso . " no existe", 404);
-        
-        }
-    }
+            private function verificarSobrecurso($subrecurso){
+                if (!in_array($subrecurso, array('destino', 'fecha_salida', 'fecha_regreso', 'descripcion', 'precio', 'id_cliente', 'id_viaje'))) {
+                    return False;
+                }
+                return True;
+            }
+                private function getCampoViaje($viaje, $subrecurso)
+                {
+                     if (isset($viaje->$subrecurso)&& $this->verificarSobrecurso($subrecurso))
+                     $this->view->response($viaje->$subrecurso, 200);
+                    else{
+                        $this->view->response("El Viaje con el subrecurso: " . $subrecurso . " no existe", 404);
+                    }
+                }
 
     private function getViajes()
     {
@@ -139,7 +106,7 @@ class ViajeApiController extends ApiController
                 return;
             }
             $params['sort_dir'] = $_GET['sort_dir'];
-            $params['sort_by'] = "nombre";//por defecto
+            $params['sort_by'] = "destino";//por defecto
         }
         if (isset($_GET['sort_by'])) {
             if (!$this->validarSortBy()) {
@@ -153,13 +120,13 @@ class ViajeApiController extends ApiController
                 return $this->view->response("Page no puede ser menor o igual a 0,  ni String, revise la documentación", 400);
             }
             $params['page'] = $_GET['page'];
-            $params['tamPage'] = 10; //por defecto
+            $params['size'] = 10; //por defecto
         }
-        if (isset($_GET['tamPage'])) {
-            if(!$this->validarTamPage()){
-                return $this->view->response("tamPage no puede ser String, revise la documentación", 400);
+        if (isset($_GET['size'])) {
+            if(!$this->validarSize()){
+                return $this->view->response("el tamaño no puede ser String, revise la documentación", 400);
             }
-            $params['tamPage'] = $_GET['tamPage'];
+            $params['size'] = $_GET['size'];
         }
 
         $viajes = $this->model->getViajes($params);
@@ -175,12 +142,12 @@ class ViajeApiController extends ApiController
 
             if ($viaje) {
                 $this->model->deleteViaje($id);
-                return $this->view->response('El Cliente con id=' . $id . ' ha sido borrada.', 200);
+                return $this->view->response('El Viaje con id=' . $id . ' ha sido borrada.', 200);
             } else {
-                return $this->view->response('El Cliente con id=' . $id . ' no existe.', 404);
+                return $this->view->response('El Viaje con id=' . $id . ' no existe.', 404);
             }
         } catch (\Throwable $e) {
-            $this->view->response("No se puede eliminar, intente con otro elemento", 404);
+            $this->view->response("No se puede eliminar, intente con otro elemento", 500);
         }
     }
 

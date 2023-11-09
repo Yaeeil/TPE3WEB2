@@ -44,7 +44,7 @@ class ClienteApiController extends ApiController
                 $this->view->response('El cliente con id=' . $id . ' no existe.', 404);
             }
         } catch (\Throwable $e) {
-            $this->view->response("No se puede eliminar, intente con otro elemento", 404);
+            $this->view->response("No se puede eliminar, intente con otro elemento", 500);
         }
     }
 
@@ -97,33 +97,7 @@ class ClienteApiController extends ApiController
        }
     }
 
-    //para que este?
-   // public function getViajesByCliente($params = [])
-   // {
-    //    $id = $params[':ID'];
-    //    $viajes = $this->model->getViajesByCliente($id);
-    //    $this->view->response($viajes, 200);
-    //}
-
     
-    //item obligatorio, sort_by fijo
-    public function getOrdenApellido() {
-        try {
-            $parametros = [];
-            if (isset($_GET['sort_dir'])) {
-                if (!$this->validarSort()) {
-                    $this->view->response("sort_dir incorrecto debe ser asc o desc, revise la documentacion", 400);
-                    return;
-                }
-                $parametros['sort_dir'] = $_GET['sort_dir'];
-                
-            }
-            $clientes = $this->model->getClientesOrdenApellido($parametros);
-            return $this->view->response($clientes, 200);
-        } catch (\Throwable $e) {
-            $this->view->response("Error no encontrado, revise la documentación", 500);
-        }
-        }
 
     private function validarSort()
     {
@@ -137,7 +111,7 @@ class ClienteApiController extends ApiController
     private function validarSortBy()
     {
         $sortBy = strtolower($_GET['sort_by']);
-        if (!in_array($sortBy, array('nombre', 'apellido', 'correo_electronico', 'fecha_nacimiento', 'nombre', 'dni', 'direccion'))) {
+        if (!in_array($sortBy, array('nombre', 'apellido', 'correo_electronico', 'fecha_nacimiento', 'id_cliente', 'dni', 'direccion'))) {
             return False;
         }
         return True;
@@ -146,7 +120,7 @@ class ClienteApiController extends ApiController
     private function validarFilterKey()
     {
         $filter_key = strtolower($_GET['filter_key']);
-        if (!in_array($filter_key, array('nombre', 'apellido', 'correo_electronico', 'fecha_nacimiento', 'nombre', 'dni', 'direccion'))) {
+        if (!in_array($filter_key, array('nombre', 'apellido', 'correo_electronico', 'fecha_nacimiento', 'id_cliente', 'dni', 'direccion'))) {
             return False;
         }
         return True;
@@ -158,41 +132,26 @@ class ClienteApiController extends ApiController
         }
         return true;
     }
-    private function validarTamPage()
+    private function validarSize()
     {
-        if (!is_numeric($_GET['tamPage'])) {
+        if (!is_numeric($_GET['size'])) {
             return false;
         }
         return true;
     }
 
-
+private function verificarSobrecurso($subrecurso){
+    if (!in_array($subrecurso, array('nombre', 'apellido', 'correo_electronico', 'fecha_nacimiento', 'id_cliente', 'dni', 'direccion'))) {
+        return False;
+    }
+    return True;
+}
     private function getCampoCliente($cliente, $subrecurso)
     {
-        switch ($subrecurso) {
-            case 'id_cliente':
-                $this->view->response($cliente->id_cliente, 200);
-                break;
-            case 'nombre':
-                $this->view->response($cliente->nombre, 200);
-                break;
-            case 'apellido':
-                $this->view->response($cliente->apellido, 200);
-                break;
-            case 'correo_electronico':
-                $this->view->response($cliente->correo_electronico, 200);
-                break;
-            case 'fecha_nacimiento':
-                $this->view->response($cliente->fecha_nacimiento, 200);
-                break;
-            case 'dni':
-                $this->view->response($cliente->dni, 200);
-                break;
-            case 'direccion':
-                $this->view->response($cliente->direccion, 200);
-                break;
-            default:
-                $this->view->response("El cliente con el subrecurso: " . $subrecurso . " no existe", 404);
+         if (isset($cliente->$subrecurso)&& $this->verificarSobrecurso($subrecurso))
+         $this->view->response($cliente->$subrecurso, 200);
+        else{
+            $this->view->response("El cliente con el subrecurso: " . $subrecurso . " no existe", 404);
         }
     }
     private function getClientes()
@@ -226,13 +185,13 @@ class ClienteApiController extends ApiController
                 return $this->view->response("Page no puede ser menor o igual a 0,  ni String, revise la documentación", 400);
             }
             $params['page'] = $_GET['page']; //pagina
-            $params['tamPage'] = 10; //por defecto
+            $params['size'] = 10; //por defecto
         }
-        if (isset($_GET['tamPage'])) {
-            if(!$this->validarTamPage()){
-                return $this->view->response("tamPage no puede ser String, revise la documentación", 400);
+        if (isset($_GET['size'])) {
+            if(!$this->validarSize()){
+                return $this->view->response("El tamaño no puede ser String, revise la documentación", 400);
             }
-            $params['tamPage'] = $_GET['tamPage']; //limite por pagina
+            $params['size'] = $_GET['size']; //limite por pagina
         }
 
         $clientes = $this->model->getClientes($params);
