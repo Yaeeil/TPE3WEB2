@@ -1,6 +1,7 @@
 <?php
 require_once './database/config.php';
 
+//realiza una codificación de URL segura para los datos proporcionados en formato base64.
 function base64url_encode($data)
 {
     return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
@@ -8,6 +9,7 @@ function base64url_encode($data)
 
 class AuthHelper
 {
+    //intenta obtener el encabezado de autorización 
     function getAuthHeaders()
     {
         $header = "";
@@ -18,6 +20,9 @@ class AuthHelper
         return $header;
     }
 
+    //crea un token JWT. (agrega información sobre el algoritmo de firma (alg),
+    // el tipo (typ), y una marca de tiempo de expiración (exp) al encabezado y 
+    //payload del token. Luego, genera una firma HMAC usando la clave secreta (JWT_KEY))
     function createToken($payload)
     {
         $header = array(
@@ -38,6 +43,9 @@ class AuthHelper
         return $token;
     }
 
+    //verifica la validez de un token JWT. Divide el token en sus partes (encabezado, 
+    //payload y firma), recalcula la firma y compara las firmas. Luego verifica la expiración 
+    //del token comparando la marca de tiempo de expiración (exp) con el tiempo actual.
     function verify($token)
     {
 
@@ -62,6 +70,7 @@ class AuthHelper
         return $payload;
     }
 
+    //intenta obtener y verificar el token de autenticación actual en el encabezado Authorization. 
     function currentUser()
     {
         $auth = $this->getAuthHeaders(); // "Bearer $token"

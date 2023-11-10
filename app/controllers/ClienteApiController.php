@@ -52,7 +52,7 @@ class ClienteApiController extends ApiController
                 $this->view->response('El cliente con id=' . $id . ' no existe.', 404);
             }
         } catch (\Throwable $e) {
-            $this->view->response("No se puede eliminar, intente con otro elemento", 500);
+            $this->view->response("No se puede eliminar, debe eliminar el viaje que tiene este cliente asociado o intente con otro elemento", 500);
         }
     }
 
