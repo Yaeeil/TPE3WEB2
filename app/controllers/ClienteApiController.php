@@ -1,15 +1,19 @@
 <?php
 require_once 'app/controllers/ApiController.php';
 
+require_once 'app/helpers/AuthApiHelper.php';
+
 require_once 'app/models/ClienteModel.php';
 
 class ClienteApiController extends ApiController
 {
     private $model;
+    private $authHelper;
 
     function __construct()
     {
         parent::__construct();
+        $this->authHelper = new AuthHelper();
         $this->model = new ClienteModel();
     }
 
@@ -33,6 +37,10 @@ class ClienteApiController extends ApiController
 
     function delete($params = [])
     {
+        if (empty($this->authHelper->currentUser())) {
+            $this->view->response("No tienes permisos para realizar esta accion", 401);
+            return;
+        }
         try {
             $id = $params[':ID'];
             $cliente = $this->model->getClienteById($id);
@@ -48,8 +56,13 @@ class ClienteApiController extends ApiController
         }
     }
 
+
     function create($params = [])
     {
+        if (empty($this->authHelper->currentUser())) {
+            $this->view->response("No tienes permisos para realizar esta accion", 401);
+            return;
+        }
         $body = $this->getData();
         $nombre = $body->nombre;
         $apellido = $body->apellido;
@@ -72,32 +85,34 @@ class ClienteApiController extends ApiController
 
     function update($params = [])
     {
-       
+        if (empty($this->authHelper->currentUser())) {
+            $this->view->response("No tienes permisos para realizar esta accion", 401);
+            return;
+        }
         $id = $params[':ID'];
         $cliente = $this->model->getClienteById($id);
-    try{
-        if ($cliente) {
-            $body = $this->getData();
-            $nombre = $body->nombre;
-            $apellido = $body->apellido;
-            $correoElectronico = $body->correo_electronico;
-            $fechaDeNacimiento = $body->fecha_nacimiento;
-            $dni = $body->dni;
-            $direccion = $body->direccion;
-            
-            $this->model->updateCliente($nombre, $apellido, $correoElectronico, $fechaDeNacimiento, $dni, $direccion, $id);
-        
-            return $this->view->response('El Cliente con id=' . $id . ' ha sido modificada.', 200);
-        }
-            else {
-            return $this->view->response('El Cliente con id=' . $id . ' no existe.', 404);
-        }
-        }catch(\Throwable $e) {
+        try {
+            if ($cliente) {
+                $body = $this->getData();
+                $nombre = $body->nombre;
+                $apellido = $body->apellido;
+                $correoElectronico = $body->correo_electronico;
+                $fechaDeNacimiento = $body->fecha_nacimiento;
+                $dni = $body->dni;
+                $direccion = $body->direccion;
+
+                $this->model->updateCliente($nombre, $apellido, $correoElectronico, $fechaDeNacimiento, $dni, $direccion, $id);
+
+                return $this->view->response('El Cliente con id=' . $id . ' ha sido modificada.', 200);
+            } else {
+                return $this->view->response('El Cliente con id=' . $id . ' no existe.', 404);
+            }
+        } catch (\Throwable $e) {
             $this->view->response('Error no encontrado, revise la documentacion', 500);
-       }
+        }
     }
 
-    
+
 
     private function validarSort()
     {
@@ -140,17 +155,18 @@ class ClienteApiController extends ApiController
         return true;
     }
 
-private function verificarSobrecurso($subrecurso){
-    if (!in_array($subrecurso, array('nombre', 'apellido', 'correo_electronico', 'fecha_nacimiento', 'id_cliente', 'dni', 'direccion'))) {
-        return False;
+    private function verificarSobrecurso($subrecurso)
+    {
+        if (!in_array($subrecurso, array('nombre', 'apellido', 'correo_electronico', 'fecha_nacimiento', 'id_cliente', 'dni', 'direccion'))) {
+            return False;
+        }
+        return True;
     }
-    return True;
-}
     private function getCampoCliente($cliente, $subrecurso)
     {
-         if (isset($cliente->$subrecurso)&& $this->verificarSobrecurso($subrecurso))
-         $this->view->response($cliente->$subrecurso, 200);
-        else{
+        if (isset($cliente->$subrecurso) && $this->verificarSobrecurso($subrecurso))
+            $this->view->response($cliente->$subrecurso, 200);
+        else {
             $this->view->response("El cliente con el subrecurso: " . $subrecurso . " no existe", 404);
         }
     }
@@ -181,14 +197,14 @@ private function verificarSobrecurso($subrecurso){
             $params['sort_by'] = $_GET['sort_by'];
         }
         if (isset($_GET['page'])) {
-            if(!$this->validarPage()){
+            if (!$this->validarPage()) {
                 return $this->view->response("Page no puede ser menor o igual a 0,  ni String, revise la documentación", 400);
             }
             $params['page'] = $_GET['page']; //pagina
             $params['size'] = 10; //por defecto
         }
         if (isset($_GET['size'])) {
-            if(!$this->validarSize()){
+            if (!$this->validarSize()) {
                 return $this->view->response("El tamaño no puede ser String, revise la documentación", 400);
             }
             $params['size'] = $_GET['size']; //limite por pagina
