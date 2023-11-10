@@ -21,6 +21,17 @@ Usar Postman
 # Documentacion de Endpoints:
 CARPETA representaria la carpeta en donde estan los archivos de este trabajo, poner el nombre correspondiente.
 
+# Para el Token:
+Para hacer POST/PUT/DELETE es necesaria la autenticacion por Token.
+
+Endpoint: http://localhost/TPE3/api/user/token para crearlo
+
+Usuario:webadmin
+Contraseña:admin
+
+Estos datos se ingresan en la seccion authorization de tipo Basic Auth.
+Luego de ingresarlos, se debe hacer un send con el endpoint especificado. Una vez se obtiene el token, se debe ir al endpoint que necesite autorización y en la sección de authorization, de tipo Bearer Token, se ingresa dicho token.
+
 # Para la tabla de viajes:
 
 # Obtener todos los viajes(GET)
@@ -39,9 +50,9 @@ Ejemplo de uso: http://localhost/CARPETA/api/viajes?sort_by=nombre&sort_dir=asc
 # Obtener Viajes con paginación (GET):(Opcional)
 
 page: para la página.
-limit: para el límite por página.
+size: para el límite por página.
 
-Ejemplo de uso: http://localhost/CARPETA/api/viajes?page=2&tamPage=20
+Ejemplo de uso: http://localhost/CARPETA/api/viajes?page=2&size=20
 
 # Listar Viajes Filtrados por cualquier campo (GET):(Opcional)
 Posibles filter_key:
@@ -53,7 +64,7 @@ Ejemplo de uso: http://localhost/CARPETA/api/viajes?filter_key=destino&filter_va
 
 # Obtener Viajes combinados(GET):
 
-Ejemplo de uso: http://localhost/CARPETA/api/viajes?sort_by=destino&sort_dir=desc&filter_key=destino&filter_value=Paris&page=2&limit=7
+Ejemplo de uso: http://localhost/CARPETA/api/viajes?sort_by=destino&sort_dir=desc&filter_key=destino&filter_value=Paris&page=2&size=7
 
 
 # Obtener Viaje por ID (GET):
@@ -69,6 +80,7 @@ Endpoint: http://localhost/CARPETA/api/viajes/:ID/:subrecurso
 
 
 # Crear un Nuevo Viaje (POST):
+Debe autenticarse.
 
 Endpoint: http://localhost/CARPETA/api/viajes
 
@@ -84,6 +96,7 @@ Ejemplo de solicitud POST en el body:
 }
 
 # Actualizar un Viaje por ID (PUT):
+Debe autenticarse.
 
 Endpoint: http://localhost/CARPETA/api/viajes/:ID
 
@@ -98,6 +111,7 @@ Ejemplo de solicitud PUT en el body:
 }
 
 # Eliminar un Viaje por ID (DELETE):
+Debe autenticarse.
 
 Endpoint: http://localhost/CARPETA/api/viajes/:ID
 
@@ -113,10 +127,10 @@ Endpoint: http://localhost/CARPETA/api/clientes
 # Obtener todos los clientes (GET) con paginación (opcional)
 
 page: para la página.
-limit: para el límite por página.
+size: para el límite por página.
 
 
-Ejemplo de uso: http://localhost/CARPETA/api/clientes?page=2&limit=10
+Ejemplo de uso: http://localhost/CARPETA/api/clientes?page=2&size=10
 
 # Obtener clientes filtrados por cualquier campo (GET):(Opcional)
 
@@ -142,7 +156,7 @@ Ejemplo de uso: http://localhost/CARPETA/api/clientes?sort_by=nombre&sort_dir=as
 
 # Obtener clientes con combinación de paginación, filtrado y orden (GET)
 
-Ejemplo de uso: http://localhost/CARPETA/api/clientes?sort_by=apellido&sort_dir=desc&filter_key=nombre&filter_value=Juan&page=2&limit=7
+Ejemplo de uso: http://localhost/CARPETA/api/clientes?sort_by=apellido&sort_dir=desc&filter_key=nombre&filter_value=Juan&page=2&size=7
 
 # Obtener cliente por ID (GET)
 Endpoint: http://localhost/CARPETA/api/clientes/:ID
@@ -155,6 +169,8 @@ Posibles sobrecurso:
 id_cliente, nombre, apellido, correo_electronico, fecha_nacimiento, dni,direccion.
 
 # Crear un nuevo cliente (POST)
+Debe autenticarse.
+
 Endpoint: http://localhost/CARPETA/api/clientes
 
 Ejemplo de solicitud POST en el body:
@@ -169,6 +185,8 @@ Ejemplo de solicitud POST en el body:
 }
 
 # Actualizar un cliente por ID (PUT)
+Debe autenticarse.
+
 Endpoint: http://localhost/CARPETA/api/clientes/:ID
 
 Ejemplo de solicitud PUT en el body:
@@ -183,6 +201,8 @@ Ejemplo de solicitud PUT en el body:
 }
 
 # Eliminar un cliente por ID (DELETE)
+Debe autenticarse.
+
 Endpoint: http://localhost/CARPETA/api/clientes/:ID
 
 

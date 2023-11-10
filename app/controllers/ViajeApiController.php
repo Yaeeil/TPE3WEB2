@@ -109,7 +109,7 @@ class ViajeApiController extends ApiController
         }
         if (isset($_GET['sort_dir'])) {
             if (!$this->validarSort()) {
-                $this->view->response("sort_dir no es asc ni desc", 400);
+                $this->view->response("sort_dir no es asc ni desc, revise la documentacion", 400);
                 return;
             }
             $params['sort_dir'] = $_GET['sort_dir'];
