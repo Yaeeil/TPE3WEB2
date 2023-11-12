@@ -24,7 +24,7 @@ CARPETA representaria la carpeta en donde estan los archivos de este trabajo, po
 # Para el Token:
 Para hacer POST/PUT/DELETE es necesaria la autenticacion por Token.
 
-Endpoint: http://localhost/TPE3/api/user/token para crearlo
+Endpoint: http://localhost/CARPETA/api/user/token para crearlo
 
 Usuario:webadmin
 Contraseña:admin
